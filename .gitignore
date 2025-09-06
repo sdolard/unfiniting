@@ -1,0 +1,19 @@
+# Node
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Editor
+
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env

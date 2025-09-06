@@ -1,0 +1,41 @@
+{
+  "name": "unfiniting",
+  "version": "0.1.0",
+  "description": "A small CLI REPL implemented in TypeScript",
+  "main": "dist/cli.js",
+  "types": "dist/cli.d.ts",
+  "bin": {
+    "unfiniting": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"No tests\" && exit 0",
+    "postbuild": "node ./scripts/add-shebang.js && chmod +x dist/cli.js",
+    "start": "node dist/cli.js",
+    "dev": "ts-node src/cli.ts",
+    "clean": "rimraf dist",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:md": "prettier --write \"**/*.md\""
+  },
+  "keywords": [
+    "cli",
+    "repl",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.124",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
