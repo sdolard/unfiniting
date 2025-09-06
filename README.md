@@ -5,6 +5,7 @@ unfiniting is a CLI tool to build training datasets intended for fine‑tuning l
 Brief: scan a repository or folder, identify relevant source artifacts, extract and annotate code snippets (AI-assisted + human review), generate prompt/completion pairs, and export SFT‑ready datasets.
 
 Table of contents
+
 - Quickstart
 - Features
 - CLI usage
@@ -18,6 +19,7 @@ Table of contents
 
 Quickstart
 Requirements
+
 - Node.js >= 18
 - npm
 
@@ -25,6 +27,7 @@ Package manager note
 This project uses pnpm as the package manager. We recommend enabling Corepack (available on modern Node versions) to get a reproducible pnpm:
 
 # enable Corepack and prepare pnpm (recommended)
+
 corepack enable
 corepack prepare pnpm@latest --activate
 
@@ -35,6 +38,7 @@ If you prefer to install pnpm globally:
 npm install -g pnpm
 
 Install
+
 1. Clone the repository:
    git clone <repo-url>
 2. Install dependencies:
@@ -48,16 +52,18 @@ pnpm run build
 pnpm start
 
 Features (current & intended)
+
 - Core current commands: setdir, showdir, cd (basic workspace management).
 - Planned core pipeline commands: analyze, extract, annotate, export-sft, train.
 - Persisted configuration (default: ~/.mycli_config.json).
 - Extensible architecture (analyzers, extractors, annotators, exporters).
 
 CLI usage (current and planned)
+
 - setdir <path> — set working directory (persisted).
 - showdir — show configured directory.
 - cd <path> — change process working directory.
-Planned (to implement):
+  Planned (to implement):
 - analyze [options] — scan and score candidate files (respect .gitignore).
 - extract [options] — copy and chunk selected files into a workspace.
 - annotate [--auto|--interactive] — generate or review annotations (LLM-assisted).
@@ -66,31 +72,37 @@ Planned (to implement):
 
 Execution plan / Roadmap
 Phase 0 — Preparations
+
 - Ensure environment (Node >= 18), install deps, create local .env for secrets (do not commit).
 - Verify current CLI runs (npm run dev).
 
 Phase 1 — MVP (scan → extract → annotate → export)
+
 - Implement `analyze`: list candidate files using heuristics and respect .gitignore.
 - Implement `extract`: copy candidate files to workspace and split into snippets (functions, classes, docblocks) using heuristics or simple parsing.
 - Implement `annotate` (auto): call an LLM to produce initial annotations (summary, intent).
 - Implement `export`: produce JSONL SFT format `{ "prompt": "...", "completion": "..." }`.
 
 Phase 2 — Improved extraction & annotation
+
 - Use AST parsing (Babel / Tree‑sitter) for robust snippet extraction.
 - Add richer metadata and scoring (path, language, start/end lines, commit hash, license).
 - Provide an interactive human review UI for annotations.
 
 Phase 3 — Safety, compliance, robustness
+
 - Secrets/PII scanning and filtering before export.
 - License checks and provenance tracking.
 - Unit tests, CI, and validation workflows.
 
 Phase 4 — Full training workflow
+
 - Support export formats for targeted LLM providers (OpenAI, Hugging Face).
 - Provide training wrappers (LoRA / PEFT) or prepare artifacts for external training.
 - Add evaluation & benchmark loop for iterative improvement.
 
 Output formats & metadata
+
 - MVP export: JSONL (one JSON object per line) of SFT examples:
   `{ "prompt": "...", "completion": "..." }`
 - Companion metadata file `metadata.jsonl` with provenance fields:
@@ -98,11 +110,13 @@ Output formats & metadata
 - Keep provenance (commit SHA, repo URL) to enable auditability.
 
 Ethics, licensing & safety
+
 - Respect upstream licenses: warn on restrictive licenses and require explicit consent to include third‑party code.
 - Filter secrets and personal data before export (patterns + heuristics).
 - Only process repositories you are authorized to use for training.
 
 How to resume work in the next session (session guide)
+
 - Define the session objective (e.g. "implement analyze and produce a candidate list").
 - Preconditions:
   - `.env.local` contains necessary API keys for annotator tests (e.g. OPENAI_API_KEY).
@@ -115,6 +129,7 @@ How to resume work in the next session (session guide)
   - Code for the implemented CLI commands, unit tests, and a small example dataset.
 
 Prioritized next steps (recommended)
+
 1. Implement `analyze` (scan + heuristics + .gitignore support) — high priority.
 2. Implement `extract` (basic chunking by heuristics/regex) — high priority.
 3. Implement minimal `annotator` wrapper (LLM calls for auto annotation) — medium.
@@ -123,6 +138,7 @@ Prioritized next steps (recommended)
 6. Replace regex chunking with AST parsing for JS/TS — lower priority.
 
 Contributing
+
 - Please open issues or PRs for features/bugs.
 - Add unit tests for new logic.
 - Respect the code style (ESLint + Prettier configured in repo).
