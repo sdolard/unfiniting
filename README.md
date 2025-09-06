@@ -44,6 +44,13 @@ Install
 2. Install dependencies:
    pnpm install
 
+Environment variables
+
+- Copy `.env.example` to `.env` and set your OpenAI key: `CODEX_OPENAI_API_KEY=sk-...`.
+- Load it before running the CLI: `set -a; source .env; set +a`.
+- The CLI reads the key from the environment via `~/.codex/config.toml` where `[auth].api_key = "${CODEX_OPENAI_API_KEY}"` and uses the default model `openai/gpt-5-mini-2025-08-07`.
+- `.env` is ignored by `.gitignore`; never commit real keys.
+
 Run in development (TypeScript directly)
 pnpm run dev
 

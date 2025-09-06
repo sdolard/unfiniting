@@ -51,7 +51,7 @@ Committing
   git commit -m "deps: update dependencies"
 
 Code style
- 
+
 - This repo uses ESLint and Prettier. Please run linters/formatters before committing:
   pnpm run lint
   pnpm run format
@@ -71,6 +71,7 @@ User-facing strings
 If you introduce new CLI output, add/update unit tests that assert the English strings so regressions are prevented.
 
 Commit instructions
+
 - git add src/cli.ts CONTRIBUTING.md
 - git commit -m "chore(i18n): require English for all user-facing strings and document policy"
 

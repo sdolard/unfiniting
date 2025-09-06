@@ -52,14 +52,14 @@ export async function handleCommand(line: string): Promise<boolean> {
     return false;
   }
 
-  // Retirer le '/' initial puis parser
+  // Remove the leading '/' then parse
   const withoutSlash = trimmed.slice(1).trim();
   if (!withoutSlash) return false;
   const parts = withoutSlash.split(/\s+/);
   const cmd = parts[0].toLowerCase();
   const args = parts.slice(1);
 
-  // Alias de sortie
+  // Exit aliases
   if (cmd === 'exit' || cmd === 'quit' || cmd === 'q') {
     return true;
   }
@@ -71,7 +71,7 @@ export async function handleCommand(line: string): Promise<boolean> {
   }
 
   if (cmd === 'showdir') {
-    console.log(`Répertoire courant: ${currentDir}`);
+    console.log(`Current directory: ${currentDir}`);
     return false;
   }
 
@@ -141,7 +141,7 @@ export async function handleCommand(line: string): Promise<boolean> {
 async function main(): Promise<void> {
   await loadConfig();
   // Welcome message
-  console.log('Bienvenue dans unfiniting CLI. Tapez /help pour la liste des commandes.');
+  console.log('Welcome to unfiniting CLI. Type /help for the list of commands.');
   console.log(`Current directory: ${currentDir}`);
 
   const rl = readline.createInterface({
