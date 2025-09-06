@@ -39,20 +39,31 @@ async function saveConfig(): Promise<void> {
 
 // Parse and execute a single command line.
 // Returns true when the REPL should exit.
-async function handleCommand(line: string): Promise<boolean> {
+export async function handleCommand(line: string): Promise<boolean> {
   const trimmed = line.trim();
   if (!trimmed) return false;
 
-  const parts = trimmed.split(/\s+/);
-  const cmd = parts[0];
+  // Commands must start with '/'
+  if (!trimmed.startsWith('/')) {
+    console.log("Prefix commands with '/' (e.g. /help).");
+    return false;
+  }
+
+  // Retirer le '/' initial puis parser
+  const withoutSlash = trimmed.slice(1).trim();
+  if (!withoutSlash) return false;
+  const parts = withoutSlash.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
   const args = parts.slice(1);
 
-  if (cmd === 'exit' || cmd === 'quit') {
+  // Alias de sortie
+  if (cmd === 'exit' || cmd === 'quit' || cmd === 'q') {
     return true;
   }
 
-  if (cmd === 'help') {
-    console.log('Commands: setdir <path>, showdir, cd <path>, exit');
+  // Help
+  if (cmd === 'help' || cmd === '?') {
+    console.log('Available commands:\n  /help | /?         - show this help\n  /setdir <path>     - set the working directory (persisted)\n  /showdir           - show the configured directory\n  /cd <path>         - change the process working directory\n  /exit | /quit | /q - exit\n  (other planned commands: analyze, extract, annotate, export-sft, train)');
     return false;
   }
 
@@ -79,17 +90,17 @@ async function handleCommand(line: string): Promise<boolean> {
     try {
       const stat = await fsPromises.stat(resolved);
       if (!stat.isDirectory()) {
-        console.log("Le chemin spécifié n'est pas un répertoire.");
+        console.log("The specified path is not a directory.");
         return false;
       }
     } catch (err) {
-      console.log("Le chemin spécifié n'existe pas.");
+      console.log("The specified path does not exist.");
       return false;
     }
 
     currentDir = resolved;
     await saveConfig();
-    console.log(`Répertoire enregistré: ${currentDir}`);
+    console.log(`Directory saved: ${currentDir}`);
     return false;
   }
 
@@ -111,15 +122,15 @@ async function handleCommand(line: string): Promise<boolean> {
       process.chdir(resolved);
       currentDir = process.cwd();
       await saveConfig();
-      console.log(`Répertoire courant changé: ${currentDir}`);
+      console.log(`Current directory changed: ${currentDir}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.log('Impossible de changer de répertoire:', msg);
+      console.log('Failed to change directory:', msg);
     }
     return false;
   }
 
-  console.log(`Unknown command: ${cmd}`);
+  console.log(`Unknown command: /${cmd}`);
   return false;
 }
 
