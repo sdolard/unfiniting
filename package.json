@@ -14,7 +14,7 @@
     "start": "node dist/cli.js",
     "dev": "ts-node src/cli.ts",
     "clean": "rimraf dist",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:md": "prettier --write \"**/*.md\""
   },
@@ -36,6 +36,6 @@
     "prettier": "^2.8.8",
     "rimraf": "^5.0.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "5.3.3"
   }
 }
