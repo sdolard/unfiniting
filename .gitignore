@@ -19,7 +19,6 @@ Thumbs.db
 .env
 
 # Build / output
-dist/
 build/
 out/
 *.tsbuildinfo
@@ -57,9 +56,7 @@ data/
 workspace/
 examples/**/node_modules
 
-# OS
-.DS_Store
-Thumbs.db
+# Aider artifacts (keep config file itself)
 .aider.chat.*
 .aider.tags.*
 .aider.input.*

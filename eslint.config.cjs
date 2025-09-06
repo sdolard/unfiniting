@@ -1,46 +1,95 @@
-const { FlatCompat } = require('@eslint/eslintrc');
-const path = require('path');
+// Flat ESLint config (fully migrated; legacy .eslintrc removed)
+// Node + TypeScript setup
 const js = require('@eslint/js');
-const fs = require('fs');
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
+const tsParser = require('@typescript-eslint/parser');
+const importPlugin = require('eslint-plugin-import');
+// path not needed once tsconfigRootDir removed
 
-const compat = new FlatCompat({ baseDirectory: __dirname });
+// Helper: extract rules from plugin's recommended config (flat format spreads rules only)
+const tsRecommended = tsPlugin.configs.recommended;
 
-// essayer de convertir .eslintrc.json ; fallback si un subpath interne d'un package n'est pas exporté
-let compatConfigs = [];
-try {
-  compatConfigs = compat.extends('./.eslintrc.json');
-} catch (err) {
-  try {
-    const rcPath = require('path').join(__dirname, '.eslintrc.json');
-    if (fs.existsSync(rcPath)) {
-      const rc = JSON.parse(fs.readFileSync(rcPath, 'utf8'));
-      const exts = rc.extends ? (Array.isArray(rc.extends) ? rc.extends : [rc.extends]) : [];
-      const filtered = exts.filter(e => e !== 'eslint:recommended' && e !== 'eslint:all');
-      if (filtered.length) {
-        compatConfigs = compat.extends(...filtered);
-      } else {
-        compatConfigs = [];
-      }
-    }
-  } catch (inner) {
-    compatConfigs = [];
-  }
-}
-
+/** @type {import('eslint').Linter.FlatConfig[]} */
 module.exports = [
-  // utiliser la config recommandée depuis @eslint/js (évite require('eslint/conf/...'))
+  // Base JS recommended
   js.configs.recommended,
-  // ajouter les conversions de FlatCompat (si présentes)
-  ...compatConfigs,
+  // TypeScript files
   {
-    files: ['**/*.js', 'scripts/**'],
-    // Laisser le parser JS par défaut (espree) pour ces fichiers afin d'éviter
-    // que les règles @typescript-eslint appellent context.getScope.
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+  project: './tsconfig.json',
+      },
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly'
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      import: importPlugin,
+    },
     rules: {
-      '@typescript-eslint/no-var-requires': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off'
+      ...tsRecommended.rules,
+      // project specific relaxations (ported from legacy config)
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      // stricter unused vars: allow prefix '_' to intentionally ignore
+      '@typescript-eslint/no-unused-vars': ['warn', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
+  // type-aware promise safety
+  '@typescript-eslint/no-floating-promises': 'error',
+  '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: { attributes: false } }],
+  '@typescript-eslint/await-thenable': 'error',
+  '@typescript-eslint/require-await': 'warn',
+      // import ordering & hygiene
+      'import/order': ['warn', {
+        groups: [
+          'builtin', 'external', 'internal',
+          ['parent', 'sibling', 'index'], 'object', 'type'
+        ],
+        'newlines-between': 'always',
+        alphabetize: { order: 'asc', caseInsensitive: true }
+      }],
+      'import/first': 'error',
+      'import/newline-after-import': 'warn',
+      'import/no-duplicates': 'error'
     },
   },
-
+  // JavaScript (scripts) overrides
+  {
+    files: ['scripts/**/*.js', '*.cjs'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly'
+      }
+    },
+    rules: {
+      // allow CommonJS requires in maintenance scripts
+      '@typescript-eslint/no-var-requires': 'off',
+    },
+  },
+  // Ignores
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      '*.json',
+      'coverage/**',
+      '.tsbuildinfo',
+    ],
+  },
 ];

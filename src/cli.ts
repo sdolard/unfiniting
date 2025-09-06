@@ -6,8 +6,8 @@
 
 import fs from 'fs';
 import fsPromises from 'fs/promises';
-import path from 'path';
 import { homedir } from 'os';
+import path from 'path';
 import readline from 'readline';
 
 // Path to the configuration file stored in the user's home directory
@@ -25,7 +25,7 @@ async function loadConfig(): Promise<void> {
         currentDir = obj.currentDir;
       }
     }
-  } catch (err) {
+  } catch {
     // ignore config load errors
   }
 }
@@ -96,7 +96,7 @@ export async function handleCommand(line: string): Promise<boolean> {
         console.log("The specified path is not a directory.");
         return false;
       }
-    } catch (err) {
+  } catch {
       console.log("The specified path does not exist.");
       return false;
     }
@@ -153,18 +153,21 @@ async function main(): Promise<void> {
   rl.prompt();
 
   // Handle a new input line: execute command and optionally exit
-  rl.on('line', async line => {
-    try {
-      const shouldExit = await handleCommand(line);
-      if (shouldExit) {
-        rl.close();
-      } else {
+  rl.on('line', line => {
+    // Deliberately not returning a promise to the event emitter
+    void (async () => {
+      try {
+        const shouldExit = await handleCommand(line);
+        if (shouldExit) {
+          rl.close();
+        } else {
+          rl.prompt();
+        }
+      } catch (err) {
+        console.error('Error handling command:', err);
         rl.prompt();
       }
-    } catch (err) {
-      console.error('Error handling command:', err);
-      rl.prompt();
-    }
+    })();
   });
 
   // Handle readline close event: exit the process cleanly
@@ -175,8 +178,9 @@ async function main(): Promise<void> {
 }
 
 if (require.main === module) {
-  main().catch(err => {
-    console.error('Fatal error:', err);
+  main().catch(error => {
+    // retaining variable for logging; rename to avoid earlier 'err' unused variable rule context
+    console.error('Fatal error:', error);
     process.exit(1);
   });
 }
