@@ -60,4 +60,7 @@ examples/**/node_modules
 # OS
 .DS_Store
 Thumbs.db
+.aider.chat.*
+.aider.tags.*
+.aider.input.*
 .aider*

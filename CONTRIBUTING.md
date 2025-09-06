@@ -51,10 +51,28 @@ Committing
   git commit -m "deps: update dependencies"
 
 Code style
-
+ 
 - This repo uses ESLint and Prettier. Please run linters/formatters before committing:
   pnpm run lint
   pnpm run format
+
+User-facing strings
+
+- All text that will be shown to end users must be written in English. This includes:
+  - console output from the CLI (help, prompts, error messages),
+  - example commands shown in README or docs,
+  - messages/assertions in tests that describe CLI behaviour.
+- Reason: a single language for user-facing strings improves accessibility, testing and CI stability.
+- Quick checklist before commit:
+  1. Search for non-English strings in source files: grep -R --line-number -n 'Bienvenue\\|Répertoire\\|Préfixez\\|Impossible\\|Le chemin' src || true
+  2. Run tests and inspect any failing tests that may assume English text.
+  3. Update tests if you intentionally change wording.
+
+If you introduce new CLI output, add/update unit tests that assert the English strings so regressions are prevented.
+
+Commit instructions
+- git add src/cli.ts CONTRIBUTING.md
+- git commit -m "chore(i18n): require English for all user-facing strings and document policy"
 
 Opening PRs
 

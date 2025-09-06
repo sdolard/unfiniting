@@ -1,5 +1,8 @@
 // Simple CLI REPL implemented in TypeScript
 // Supports commands: setdir <path>, showdir, cd <path>, exit
+// NOTE: All user-facing strings (console output, help text, errors shown to users)
+// must be written in English. Keep messages and tests in English to ensure consistency.
+// This file and any new CLI code should follow that rule.
 
 import fs from 'fs';
 import fsPromises from 'fs/promises';
@@ -137,6 +140,9 @@ export async function handleCommand(line: string): Promise<boolean> {
 // Initialize the REPL: load config, create readline interface and wire events
 async function main(): Promise<void> {
   await loadConfig();
+  // Welcome message
+  console.log('Bienvenue dans unfiniting CLI. Tapez /help pour la liste des commandes.');
+  console.log(`Current directory: ${currentDir}`);
 
   const rl = readline.createInterface({
     input: process.stdin,

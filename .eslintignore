@@ -1,5 +1,0 @@
-# ignore build artifacts and deps
-dist/
-build/
-out/
-node_modules/
